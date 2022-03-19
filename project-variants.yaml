@@ -1,5 +1,5 @@
 test1-d:
-  shortName: "test 1"
+  shortName: "test 1........"
   longName: "This is my first variant"
   buildType: Debug
   description: "This is a message that shows in a tooltip"

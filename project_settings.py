@@ -2,9 +2,10 @@ import yaml
 import sys
 import os
 
-class ProjectVariant:
-	def __init__(self, data) -> None:
+class Variant:
+	def __init__(self, data, varname) -> None:
 		self.raw_dict = data
+		self.variantName = varname
 		self.shortName = "Untitled"
 		self.longName = "Untitled"
 		self.description = "No description given"
@@ -23,17 +24,29 @@ class ProjectVariant:
 			pass
 
 
-def read_project_variants():
-	CURRENT_SCRIPT_DIR = (os.path.dirname(os.path.abspath(__file__)))
-	file = os.path.join(CURRENT_SCRIPT_DIR, "project-variants.yaml")
+def read_project_variants(workspace):
+	file = os.path.join(workspace, "project-variants.yaml")
 	f = open(file, "r")
 	yamlfile = yaml.load(f, Loader=yaml.FullLoader)
 	f.close()
 	variants = list()
 	for i in yamlfile:
-		v = ProjectVariant(yamlfile[i])
+		v = Variant(yamlfile[i], i)
 		variants.append(v)
 	return variants
+
+def current_project_variant(workspace):
+	file = os.path.join(workspace, ".cur_proj_variant.yaml")
+	f = open(file, "r")
+	yamlfile = yaml.load(f, Loader=yaml.FullLoader)
+	f.close()
+	return yamlfile
+
+def save_current_variant(variant, workspace):
+	file = os.path.join(workspace, ".cur_proj_variant.yaml")
+	f = open(file, "w")
+	yaml.dump(variant, f)
+	f.close()
 
 
 if __name__ == '__main__':
