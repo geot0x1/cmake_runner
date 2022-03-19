@@ -1,0 +1,25 @@
+test1-d:
+  shortName: "test 1"
+  longName: "This is my first variant"
+  buildType: Debug
+  description: "This is a message that shows in a tooltip"
+  settings:
+    bsp: something
+
+test1-r:
+  shortName: "test 1"
+  longName: "This is my first variant"
+  buildType: Release
+  description: "This is a message that shows in a tooltip"
+
+test2:
+  shortName: "test 2"
+  longName: "This is my second variant"
+  buildType: Debug
+  description: "This is a message that shows in a tooltip"
+
+test3:
+  shortName: "test 3"
+  longName: "This is my third variant"
+  buildType: Debug
+  description: "This is a message that shows in a tooltip"
