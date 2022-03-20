@@ -1,0 +1,10 @@
+transmitter-ver1-release:
+  buildType: Release
+  description: Transmitter Ver1 Release
+  longName: Build transmitter Ver1 for debugging
+  settings:
+    BSP: BUSYRF_V1
+    FLASH_ADDR: '0x0'
+    MCU: NRF52810_XXAA
+    PROJECT_DIR: transmitter
+  shortName: Tx V1
