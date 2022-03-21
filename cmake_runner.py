@@ -67,8 +67,8 @@ def execute_rebuild_command(workspace, variant):
 	os.chdir(workspace)
 	build_dir = "build-" + variant.variantName
 	delete_build_dir(build_dir)
-	execute_configure_command(workspace, build_dir)
-	execute_build_command(workspace, build_dir)
+	execute_configure_command(workspace, variant)
+	execute_build_command(workspace, variant)
 
 
 if __name__ == '__main__':
