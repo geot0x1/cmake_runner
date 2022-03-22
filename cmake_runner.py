@@ -39,18 +39,19 @@ def get_cmake_definitions(variant):
 		print("-- Error Cmake Generator not specified")
 		sys.exit(0)
 	definitions += "-DCMAKE_BUILD_TYPE=" + variant.buildType + " "
-	for i in variant.settings:
-		d = "-D" + i + "=" + variant.settings[i] + " "
-		definitions += d
+	if variant.settings:
+		for i in variant.settings:
+			d = "-D" + i + "=" + variant.settings[i] + " "
+			definitions += d
 	return definitions
 
 def build_file_exists(build_dir):
 	build_file = ""
 	cmake_runner_settings = get_cmake_runner_settings()
 	if cmake_runner_settings['cmake-generator'] == 'Ninja':
-		build_file = os.path.isfile(os.path.join(build_dir, "build.ninja"))
+		build_file = os.path.join(build_dir, "build.ninja")
 	elif cmake_runner_settings['cmake-generator'] == 'MinGW Makefiles':
-		build_file = os.path.isfile(os.path.join(build_dir, "Makefile"))
+		build_file = os.path.join(build_dir, "Makefile")
 	else:
 		print("-- Error Cmake Generator not specified")
 		sys.exit(0)
@@ -71,7 +72,7 @@ def execute_build_command(workspace, variant):
 	cmake_runner_settings = get_cmake_runner_settings()
 	os.chdir(workspace)
 	build_dir = "build-" + variant.variantName
-	if build_file_exists(build_dir):
+	if build_file_exists(build_dir) == False:
 		execute_configure_command(workspace, variant)
 	cmd = "cmake --build " + build_dir
 	print("Running command: " + cmd)
