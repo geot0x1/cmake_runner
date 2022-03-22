@@ -52,15 +52,25 @@ def execute_configure_command(workspace, variant):
 	os.system(cmd)
 
 def execute_build_command(workspace, variant):
+	cmake_runner_settings = get_cmake_runner_settings()
 	os.chdir(workspace)
 	build_dir = "build-" + variant.variantName
+	if cmake_runner_settings['cmake-generator'] == 'Ninja':
+		if os.path.isfile(os.path.join(build_dir, "build.ninja")) == False:
+			execute_configure_command(workspace, variant)
+	elif cmake_runner_settings['cmake-generator'] == 'MinGW Makefiles':
+		if os.path.isfile(os.path.join(build_dir, "Makefile")) == False:
+			execute_configure_command(workspace, variant)
+	else:
+		print("-- Error Cmake Generator not specified")
+		sys.exit(0)
 	cmd = "cmake --build " + build_dir
 	os.system(cmd)
 
 def execute_flash_command(workspace, variant):
 	os.chdir(workspace)
 	build_dir = "build-" + variant.variantName
-	cmd = "cmake --build " + build_dir + " --target flash"
+	cmd = "cmake --build " + build_dir + " --target flash_mcu"
 	os.system(cmd)
 
 def execute_rebuild_command(workspace, variant):
