@@ -19,11 +19,13 @@ def create_build_dir(build_dir):
 		return
 	if platform.system() == "Windows":
 		cmd = "mkdir " + build_dir
+		print("Running command: " + cmd)
 		os.system(cmd)
 
 def delete_build_dir(build_dir):
 	if platform.system() == "Windows":
 		cmd = "rd /s /q " + build_dir
+		print("Running command: " + cmd)
 		os.system(cmd)
 
 def get_cmake_definitions(variant):
@@ -42,35 +44,44 @@ def get_cmake_definitions(variant):
 		definitions += d
 	return definitions
 
+def build_file_exists(build_dir):
+	build_file = ""
+	cmake_runner_settings = get_cmake_runner_settings()
+	if cmake_runner_settings['cmake-generator'] == 'Ninja':
+		build_file = os.path.isfile(os.path.join(build_dir, "build.ninja"))
+	elif cmake_runner_settings['cmake-generator'] == 'MinGW Makefiles':
+		build_file = os.path.isfile(os.path.join(build_dir, "Makefile"))
+	else:
+		print("-- Error Cmake Generator not specified")
+		sys.exit(0)
+	if os.path.isfile(build_file):
+		return True
+	return False
+
 def execute_configure_command(workspace, variant):
 	os.chdir(workspace)
 	build_dir = "build-" + variant.variantName
 	create_build_dir(build_dir)
 	definitions = get_cmake_definitions(variant)
 	cmd = "cmake -S \"" + workspace + "\" -B \"" + build_dir + "\" " + definitions
-	print(cmd)
+	print("Running command: " + cmd)
 	os.system(cmd)
 
 def execute_build_command(workspace, variant):
 	cmake_runner_settings = get_cmake_runner_settings()
 	os.chdir(workspace)
 	build_dir = "build-" + variant.variantName
-	if cmake_runner_settings['cmake-generator'] == 'Ninja':
-		if os.path.isfile(os.path.join(build_dir, "build.ninja")) == False:
-			execute_configure_command(workspace, variant)
-	elif cmake_runner_settings['cmake-generator'] == 'MinGW Makefiles':
-		if os.path.isfile(os.path.join(build_dir, "Makefile")) == False:
-			execute_configure_command(workspace, variant)
-	else:
-		print("-- Error Cmake Generator not specified")
-		sys.exit(0)
+	if build_file_exists(build_dir):
+		execute_configure_command(workspace, variant)
 	cmd = "cmake --build " + build_dir
+	print("Running command: " + cmd)
 	os.system(cmd)
 
 def execute_flash_command(workspace, variant):
 	os.chdir(workspace)
 	build_dir = "build-" + variant.variantName
 	cmd = "cmake --build " + build_dir + " --target flash_mcu"
+	print("Running command: " + cmd)
 	os.system(cmd)
 
 def execute_rebuild_command(workspace, variant):
