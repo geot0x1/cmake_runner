@@ -4,15 +4,14 @@ from PyQt6.QtGui import QCursor
 import sys
 import os
 import project_variants
-
-
+import cmake_runner
 
 def program_terminate():
-	print("program closing...")
 	sys.exit(0)
 
 class Button(QPushButton):
 	def __init__(self, widget, variant):
+		self.parent_widget = widget
 		super().__init__(widget)
 		self.variant = variant
 		self.setStyleSheet("QPushButton{background-color: #252121; border-style: inset; text-align: left; color: #ccc4c4; font-size: 15px;}")
@@ -21,10 +20,11 @@ class Button(QPushButton):
 		self.setText("  " + self.variant.buildType + ": " + self.variant.shortName)
 		self.setToolTip(self.variant.description)
 		font_width = self.fontMetrics().boundingRect(self.text()).width()
+		font_width = int(font_width * 1.35)
 		self.label = QLabel(self)
 		self.label.setAlignment(Qt.AlignmentFlag.AlignLeft)
 		self.label.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
-		self.label.move(font_width + 30, 7)
+		self.label.move(font_width, 7)
 		self.label.setText(self.variant.longName)
 		self.label.resize(300, self.height()-15)
 		self.label.setStyleSheet("QLabel{color: #918787;}")
@@ -37,6 +37,8 @@ class Button(QPushButton):
 	
 	def save_variant(self):
 		project_variants.save_current_variant(self.variant, ".")
+		self.parent_widget.hide()
+		cmake_runner.execute_configure_command(".", self.variant)
 
 	def mouse_click(self):
 		self.save_variant()
@@ -62,7 +64,7 @@ class MainApplication(QMainWindow):
 			button.resize(self.width(), 30)
 			self.resize(400, self.height()+30)
 			self.buttons.append(button)
-	
+
 	def resizeEvent(self, event):
 		QWidget.resizeEvent(self, event)
 	
@@ -76,6 +78,7 @@ if __name__ == '__main__':
 		print(" -- Error: No workspace given")
 		sys.exit(0)
 	workspace =  sys.argv[1]
+	os.chdir(workspace)
 	variants = project_variants.get_project_variants(workspace)
 	app = QApplication(sys.argv)
 	window = MainApplication(variants)

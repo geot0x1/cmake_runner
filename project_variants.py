@@ -20,8 +20,12 @@ class Variant:
 			self.description = data['description']
 			self.settings = data['settings']
 			self.buildType = data['buildType']
-		except KeyError:
-			pass
+		except KeyError as e:
+			if e.args[0] == 'settings':
+				pass
+			else:
+				print("[" + e.args[0] + "] missing from variant [" + self.variantName + "]")
+				sys.exit(-1)
 	
 	def set_name(self, name):
 		self.variantName = name
